@@ -1,8 +1,7 @@
 "use client"
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabaseClient'
-import signInWithOtp, { verifyOtp } from './loginApi'
+import { signInWithOtp, verifyOtp } from './actions'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
@@ -13,14 +12,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [otpSent, setOtpSent] = useState(false)
   const [otp, setOtp] = useState('')
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        router.push('/profiles')
-      }
-    })
-  }, [router])
 
   const handleSendOtp = async () => {
     setLoading(true)
@@ -38,52 +29,48 @@ export default function Login() {
   const handleVerifyOtp = async () => {
     setLoading(true)
     setMessage('')
-    const { data, error } = await verifyOtp(email, otp)
+    const { error } = await verifyOtp(email, otp)
     setLoading(false)
     if (error) {
       setMessage('Error verifying OTP: ' + error.message)
     } else {
-      setMessage('Logged in successfully! Redirecting...')
-      setTimeout(() => {
-        router.push('/profiles')
-      }, 1000)
+      setMessage('OTP verified! Redirecting...')
+      router.push('/profiles')
     }
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ maxWidth: 400, width: '100%', padding: 24, border: '1px solid #eee', borderRadius: 8, background: '#fff' }}>
-        <h2 style={{ textAlign: 'center' }}>Login with Email OTP</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="bg-white p-8 rounded-lg shadow-md min-w-[350px]">
+        <h2 className="text-center mb-4 text-lg font-semibold">Login with Email OTP</h2>
+        <Input
+          type="email"
+          placeholder="Enter your email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          disabled={loading || otpSent}
+          className="mb-4"
+        />
         {!otpSent ? (
-          <div>
-            <Input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              required
-              className="mb-3"
-            />
-            <Button onClick={handleSendOtp} disabled={loading} className="w-full">
-              {loading ? 'Sending...' : 'Send OTP'}
-            </Button>
-          </div>
+          <Button onClick={handleSendOtp} disabled={loading || !email} className="w-full">
+            Send OTP
+          </Button>
         ) : (
-          <div>
+          <>
             <Input
               type="text"
+              placeholder="Enter OTP"
               value={otp}
               onChange={e => setOtp(e.target.value)}
-              placeholder="Enter OTP code"
-              required
-              className="mb-3"
+              disabled={loading}
+              className="mb-4 mt-4"
             />
-            <Button onClick={handleVerifyOtp} disabled={loading} className="w-full">
-              {loading ? 'Verifying...' : 'Verify OTP'}
+            <Button onClick={handleVerifyOtp} disabled={loading || !otp} className="w-full">
+              Verify OTP
             </Button>
-          </div>
+          </>
         )}
-        {message && <p style={{ marginTop: 16, textAlign: 'center' }}>{message}</p>}
+        {message && <p className="mt-4 text-center text-sm text-gray-700">{message}</p>}
       </div>
     </div>
   )
