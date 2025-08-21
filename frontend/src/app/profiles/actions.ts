@@ -28,8 +28,7 @@ export async function updateProfile({ user_id:userId, username, email }: { user_
   return error
 }
 
-export async function deleteProfile(formData: FormData) {
-  const id = formData.get('id') as string;
+export async function deleteProfile(id: string) {
   await supabase.from('profiles').delete().eq('id', id);
   // Do not return anything
 }

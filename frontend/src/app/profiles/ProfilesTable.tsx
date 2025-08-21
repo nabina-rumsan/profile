@@ -11,10 +11,8 @@ export default function ProfilesTable({ profiles }: { profiles: any[] }) {
   const updateProfileMutation = useUpdateProfile();
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  async function handleDelete(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    await deleteProfileMutation.mutateAsync(formData);
+  async function handleDelete(profileId: string) {
+    await deleteProfileMutation.mutateAsync(profileId);
   }
 
   async function handleEdit(e: React.FormEvent<HTMLFormElement>) {
@@ -76,18 +74,15 @@ export default function ProfilesTable({ profiles }: { profiles: any[] }) {
                     <Edit2Icon size={16} />
                   </Button>
                 )}
-                <form onSubmit={handleDelete} style={{ display: 'inline' }}>
-                  <input type="hidden" name="id" value={profile.id} />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    type="submit"
-                    disabled={deleteProfileMutation.isPending}
-                    aria-label={`Delete ${profile.username}`}
-                  >
-                    <Trash size={16} />
-                  </Button>
-                </form>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleDelete(profile.id)}
+                  disabled={deleteProfileMutation.isPending}
+                  aria-label={`Delete ${profile.username}`}
+                >
+                  <Trash size={16} />
+                </Button>
               </TableCell>
             </TableRow>
           );
