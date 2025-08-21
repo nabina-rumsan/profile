@@ -1,77 +1,70 @@
-"use client"
-import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { signInWithOtp, verifyOtp } from './actions'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+"use client";
+import { signInWithOtp } from "./actions";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useSendOtp, useVerifyOtp } from '@/queries/auth';
 
 export default function Login() {
-  const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [message, setMessage] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [otpSent, setOtpSent] = useState(false)
-  const [otp, setOtp] = useState('')
-
-  const handleSendOtp = async () => {
-    setLoading(true)
-    setMessage('')
-    const { error } = await signInWithOtp(email)
-    setLoading(false)
-    if (error) {
-      setMessage('Error sending OTP: ' + error.message)
-    } else {
-      setMessage('OTP sent! Check your email.')
-      setOtpSent(true)
-    }
+  // Get query params for step and email
+  let step = 'email';
+  let email = '';
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search);
+    step = params.get('step') || 'email';
+    email = params.get('email') || '';
   }
 
-  const handleVerifyOtp = async () => {
-    setLoading(true)
-    setMessage('')
-    const { error } = await verifyOtp(email, otp)
-    setLoading(false)
-    if (error) {
-      setMessage('Error verifying OTP: ' + error.message)
+  const sendOtpMutation = useSendOtp();
+  const verifyOtpMutation = useVerifyOtp();
+
+  async function handleEmailSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const emailValue = formData.get('email') as string;
+    await sendOtpMutation.mutateAsync(emailValue);
+    window.location.href = `/auth?page=otp&step=otp&email=${encodeURIComponent(emailValue)}`;
+  }
+
+  async function handleOtpSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const otp = formData.get('otp') as string;
+    const emailValue = formData.get('email') as string || email;
+    const { error } = await verifyOtpMutation.mutateAsync({ email: emailValue, otp });
+    if (!error) {
+      window.location.href = '/profiles';
     } else {
-      setMessage('OTP verified! Redirecting...')
-      router.push('/profiles')
+      alert('Invalid OTP. Try again.');
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="bg-white p-8 rounded-lg shadow-md min-w-[350px]">
-        <h2 className="text-center mb-4 text-lg font-semibold">Login with Email OTP</h2>
-        <Input
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          disabled={loading || otpSent}
-          className="mb-4"
-        />
-        {!otpSent ? (
-          <Button onClick={handleSendOtp} disabled={loading || !email} className="w-full">
-            Send OTP
-          </Button>
-        ) : (
-          <>
-            <Input
-              type="text"
-              placeholder="Enter OTP"
-              value={otp}
-              onChange={e => setOtp(e.target.value)}
-              disabled={loading}
-              className="mb-4 mt-4"
-            />
-            <Button onClick={handleVerifyOtp} disabled={loading || !otp} className="w-full">
-              Verify OTP
-            </Button>
-          </>
-        )}
-        {message && <p className="mt-4 text-center text-sm text-gray-700">{message}</p>}
-      </div>
+    <div className="flex flex-col items-center justify-center min-h-screen px-4">
+      <h2 className="text-2xl font-bold mb-4">Login with Email OTP</h2>
+      {step === 'otp' ? (
+        <form onSubmit={handleOtpSubmit} className="w-full max-w-sm">
+          <input type="hidden" name="email" value={email} />
+          <Input
+            type="text"
+            name="otp"
+            placeholder="Enter OTP"
+            required
+            className="mb-4"
+          />
+          <Button type="submit" className="w-full">Verify OTP</Button>
+        </form>
+      ) : (
+        <form onSubmit={handleEmailSubmit} className="w-full max-w-sm">
+          <Input
+            type="email"
+            name="email"
+            placeholder="Enter your email"
+            required
+            className="mb-4"
+          />
+          <Button type="submit" className="w-full">Send OTP</Button>
+        </form>
+      )}
     </div>
-  )
+  );
 }

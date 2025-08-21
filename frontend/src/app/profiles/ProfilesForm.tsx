@@ -1,21 +1,25 @@
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+"use client";
+import { addProfile } from "./actions";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useAddProfile } from '@/queries/profiles';
 
-export default function ProfilesForm({ username, email, setUsername, setEmail, onAdd }: any) {
+export default function ProfilesForm() {
+  const addProfileMutation = useAddProfile();
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget as HTMLFormElement | null;
+    const formData = new FormData(form ?? undefined);
+    await addProfileMutation.mutateAsync(formData);
+    if (form) form.reset();
+  }
+
   return (
-    <div className="flex gap-2 mb-4">
-      <Input
-        placeholder="Enter username"
-        value={username}
-        onChange={e => setUsername(e.target.value)}
-      />
-      <Input
-        placeholder="Enter email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        type="email"
-      />
-      <Button onClick={onAdd}>Add Profile</Button>
-    </div>
-  )
+    <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
+      <Input name="username" placeholder="Enter username" required />
+      <Input name="email" placeholder="Enter email" type="email" required />
+      <Button type="submit">Add Profile</Button>
+    </form>
+  );
 }

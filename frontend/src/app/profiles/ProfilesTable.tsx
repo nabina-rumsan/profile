@@ -1,8 +1,33 @@
+'use client'
+
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import { Pencil, Trash } from 'lucide-react'
+import { Trash ,Edit2Icon} from 'lucide-react'
+import { useDeleteProfile, useUpdateProfile } from '@/queries/profiles'
+import { useState } from 'react'
 
-export default function ProfilesTable({ profiles, onEdit, onDelete, editingId, editUsername, editEmail, setEditUsername, setEditEmail, onSaveEdit, onCancelEdit }: any) {
+export default function ProfilesTable({ profiles }: { profiles: any[] }) {
+  const deleteProfileMutation = useDeleteProfile();
+  const updateProfileMutation = useUpdateProfile();
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  async function handleDelete(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    await deleteProfileMutation.mutateAsync(formData);
+  }
+
+  async function handleEdit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    await updateProfileMutation.mutateAsync({
+      user_id: formData.get('id') as string,
+      username: formData.get('username') as string,
+      email: formData.get('email') as string,
+    });
+    setEditingId(null);
+  }
+
   return (
     <Table className="min-w-full border border-gray-300 rounded-md">
       <TableHeader>
@@ -13,53 +38,61 @@ export default function ProfilesTable({ profiles, onEdit, onDelete, editingId, e
         </TableRow>
       </TableHeader>
       <TableBody>
-        {profiles.map((profile: any) => (
-          <TableRow key={profile.id}>
-            <TableCell>
-              {editingId === profile.id ? (
-                <input
-                  value={editUsername}
-                  onChange={e => setEditUsername(e.target.value)}
-                  style={{ width: '200px', padding: '8px', fontSize: '1rem', border: '1px solid #ccc', borderRadius: '4px', background: '#fff' }}
-                  placeholder="Edit username"
-                  autoFocus
-                />
-              ) : (
-                profile.username
-              )}
-            </TableCell>
-            <TableCell>
-              {editingId === profile.id ? (
-                <input
-                  value={editEmail}
-                  onChange={e => setEditEmail(e.target.value)}
-                  style={{ width: '250px', padding: '8px', fontSize: '1rem', border: '1px solid #ccc', borderRadius: '4px', background: '#fff' }}
-                  placeholder="Edit email"
-                />
-              ) : (
-                profile.email
-              )}
-            </TableCell>
-            <TableCell className="flex gap-2">
-              {editingId === profile.id ? (
-                <>
-                  <Button onClick={onSaveEdit}>Save</Button>
-                  <Button onClick={onCancelEdit} variant="outline">Cancel</Button>
-                </>
-              ) : (
-                <>
-                  <Button variant="ghost" size="icon" onClick={() => onEdit(profile)}>
-                    <Pencil size={16} />
+        {profiles?.map((profile) => {
+          if (!profile?.id) return null;
+          const isEditing = editingId === profile.id;
+
+          return (
+            <TableRow key={profile.id}>
+              <TableCell>
+                {isEditing ? (
+                  <form onSubmit={handleEdit} className="flex gap-2">
+                    <input type="hidden" name="id" value={profile.id} />
+                    <input
+                      name="username"
+                      defaultValue={profile.username ?? ''}
+                      className="border rounded px-2 py-1"
+                    />
+                    <input
+                      name="email"
+                      defaultValue={profile.email ?? ''}
+                      className="border rounded px-2 py-1"
+                    />
+                    <Button type="submit" size="sm" disabled={updateProfileMutation.isPending}>Save</Button>
+                  </form>
+                ) : (
+                  profile.username
+                )}
+              </TableCell>
+              <TableCell>{!isEditing && profile.email}</TableCell>
+              <TableCell className="flex gap-2">
+                {!isEditing && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setEditingId(profile.id)}
+                    aria-label={`Edit ${profile.username}`}
+                  >
+                    <Edit2Icon size={16} />
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={() => onDelete(profile.id)}>
+                )}
+                <form onSubmit={handleDelete} style={{ display: 'inline' }}>
+                  <input type="hidden" name="id" value={profile.id} />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    type="submit"
+                    disabled={deleteProfileMutation.isPending}
+                    aria-label={`Delete ${profile.username}`}
+                  >
                     <Trash size={16} />
                   </Button>
-                </>
-              )}
-            </TableCell>
-          </TableRow>
-        ))}
+                </form>
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
-  )
+  );
 }

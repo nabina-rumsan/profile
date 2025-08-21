@@ -5,10 +5,21 @@ export async function fetchProfiles() {
   return data || []
 }
 
-export async function addProfile({ username, email, userId }: { username: string; email: string; userId: string }) {
-  const { error } = await supabase.from('profiles').insert({ username, email, user_id: userId })
-  console.log('Adding profile:', { username, email, userId })
-  return error
+export async function addProfile(formData: FormData) {
+  const username = formData.get('username') as string;
+  const email = formData.get('email') as string;
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) throw new Error('User not authenticated');
+  await supabase.from('profiles').insert({
+    user_id: user.id,
+    username,
+    email,
+  });
+  // Optionally: redirect('/profiles') or revalidatePath('/profiles')
+  // Do not return anything
 }
 
 export async function updateProfile({ user_id:userId, username, email }: { user_id: string; username: string; email: string }) {
@@ -17,7 +28,8 @@ export async function updateProfile({ user_id:userId, username, email }: { user_
   return error
 }
 
-export async function deleteProfile(id: string) {
-  const { error } = await supabase.from('profiles').delete().eq('id', id)
-  return error
+export async function deleteProfile(formData: FormData) {
+  const id = formData.get('id') as string;
+  await supabase.from('profiles').delete().eq('id', id);
+  // Do not return anything
 }

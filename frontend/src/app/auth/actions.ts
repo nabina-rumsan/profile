@@ -1,13 +1,15 @@
 import { supabase } from '@/lib/supabaseClient'
 
-export async function signInWithOtp(email: string) {
-  const { data, error } = await supabase.auth.signInWithOtp({
+export async function signInWithOtp(formData: FormData) {
+  const email = formData.get('email') as string;
+  await supabase.auth.signInWithOtp({
     email,
     options: {
       shouldCreateUser: true,
     },
-  })
-  return { data, error }
+  });
+  // Optionally: redirect('/auth/otp') or revalidatePath('/auth')
+  // Do not return anything
 }
 
 export async function verifyOtp(email: string, otp: string) {
