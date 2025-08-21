@@ -25,3 +25,7 @@ export async function refreshSession(refresh_token: string) {
   const { data, error } = await supabase.auth.refreshSession({ refresh_token })
   return { data, error }
 }
+
+export async function logout() {
+  await supabase.auth.signOut();
+}

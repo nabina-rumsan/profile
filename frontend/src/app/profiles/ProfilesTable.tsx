@@ -19,7 +19,7 @@ export default function ProfilesTable({ profiles }: { profiles: any[] }) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     await updateProfileMutation.mutateAsync({
-      user_id: formData.get('id') as string,
+      id: formData.get('id') as string,
       username: formData.get('username') as string,
       email: formData.get('email') as string,
     });

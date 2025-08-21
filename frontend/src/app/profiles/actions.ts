@@ -22,9 +22,9 @@ export async function addProfile(formData: FormData) {
   // Do not return anything
 }
 
-export async function updateProfile({ user_id:userId, username, email }: { user_id: string; username: string; email: string }) {
-  const { error } = await supabase.from('profiles').update({ username, email }).eq('id', userId)
-  console.log('Updating profile:', { userId, username, email })
+export async function updateProfile({ id, username, email }: { id: string; username: string; email: string }) {
+  const { error } = await supabase.from('profiles').update({ username, email }).eq('id', id)
+  console.log('Updating profile:', { id, username, email })
   return error
 }
 
