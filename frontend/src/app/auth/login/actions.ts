@@ -12,14 +12,7 @@ export async function signInWithOtp(formData: FormData) {
   // Do not return anything
 }
 
-export async function verifyOtp(email: string, otp: string) {
-  const { data, error } = await supabase.auth.verifyOtp({
-    email,
-    token: otp,
-    type: 'email',
-  })
-  return { data, error }
-}
+
 
 export async function refreshSession(refresh_token: string) {
   const { data, error } = await supabase.auth.refreshSession({ refresh_token })

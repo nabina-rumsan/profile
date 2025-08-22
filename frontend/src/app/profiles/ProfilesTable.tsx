@@ -42,48 +42,86 @@ export default function ProfilesTable({ profiles }: { profiles: any[] }) {
 
           return (
             <TableRow key={profile.id}>
-              <TableCell>
-                {isEditing ? (
-                  <form onSubmit={handleEdit} className="flex gap-2">
-                    <input type="hidden" name="id" value={profile.id} />
-                    <input
-                      name="username"
-                      defaultValue={profile.username ?? ''}
-                      className="border rounded px-2 py-1"
-                    />
-                    <input
-                      name="email"
-                      defaultValue={profile.email ?? ''}
-                      className="border rounded px-2 py-1"
-                    />
-                    <Button type="submit" size="sm" disabled={updateProfileMutation.isPending}>Save</Button>
-                  </form>
-                ) : (
-                  profile.username
-                )}
-              </TableCell>
-              <TableCell>{!isEditing && profile.email}</TableCell>
-              <TableCell className="flex gap-2">
-                {!isEditing && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setEditingId(profile.id)}
-                    aria-label={`Edit ${profile.username}`}
-                  >
-                    <Edit2Icon size={16} />
-                  </Button>
-                )}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleDelete(profile.id)}
-                  disabled={deleteProfileMutation.isPending}
-                  aria-label={`Delete ${profile.username}`}
-                >
-                  <Trash size={16} />
-                </Button>
-              </TableCell>
+              {isEditing ? (
+                <>
+                  <TableCell>
+                    <form id={`edit-username-form-${profile.id}`} onSubmit={handleEdit}>
+                      <input type="hidden" name="id" value={profile.id} />
+                      <input
+                        name="username"
+                        defaultValue={profile.username ?? ''}
+                        className="border rounded px-2 py-1"
+                      />
+                    </form>
+                  </TableCell>
+                  <TableCell>
+                    <form id={`edit-email-form-${profile.id}`} onSubmit={handleEdit}>
+                      <input type="hidden" name="id" value={profile.id} />
+                      <input
+                        name="email"
+                        defaultValue={profile.email ?? ''}
+                        className="border rounded px-2 py-1"
+                      />
+                    </form>
+                  </TableCell>
+                  <TableCell className="flex gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => {
+                        const usernameForm = document.getElementById(`edit-username-form-${profile.id}`);
+                        const emailForm = document.getElementById(`edit-email-form-${profile.id}`);
+                        const usernameInput = usernameForm?.querySelector('input[name="username"]') as HTMLInputElement | null;
+                        const emailInput = emailForm?.querySelector('input[name="email"]') as HTMLInputElement | null;
+                        const username = usernameInput?.value ?? '';
+                        const email = emailInput?.value ?? '';
+                        updateProfileMutation.mutateAsync({
+                          id: profile.id,
+                          username,
+                          email,
+                        });
+                        setEditingId(null);
+                      }}
+                      disabled={updateProfileMutation.isPending}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDelete(profile.id)}
+                      disabled={deleteProfileMutation.isPending}
+                      aria-label={`Delete ${profile.username}`}
+                    >
+                      <Trash size={16} />
+                    </Button>
+                  </TableCell>
+                </>
+              ) : (
+                <>
+                  <TableCell>{profile.username}</TableCell>
+                  <TableCell>{profile.email}</TableCell>
+                  <TableCell className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setEditingId(profile.id)}
+                      aria-label={`Edit ${profile.username}`}
+                    >
+                      <Edit2Icon size={16} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDelete(profile.id)}
+                      disabled={deleteProfileMutation.isPending}
+                      aria-label={`Delete ${profile.username}`}
+                    >
+                      <Trash size={16} />
+                    </Button>
+                  </TableCell>
+                </>
+              )}
             </TableRow>
           );
         })}

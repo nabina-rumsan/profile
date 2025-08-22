@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
-import { signInWithOtp, verifyOtp } from '@/app/auth/actions';
+import { signInWithOtp } from '@/app/auth/login/actions';
+import { verifyOtp } from '@/app/auth/otp-verification/actions';
 
 export function useSendOtp() {
   return useMutation({

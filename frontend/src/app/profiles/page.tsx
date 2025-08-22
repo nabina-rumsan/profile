@@ -3,7 +3,7 @@ import { useProfiles } from '@/queries/profiles';
 import ProfilesTable from './ProfilesTable';
 import ProfilesForm from './ProfilesForm';
 import { Button } from '@/components/ui/button';
-import { logout } from '../auth/actions';
+import { logout } from '../auth/login/actions';
 
 export default function ProfilesPage() {
   const { data: profiles = [], isLoading, error } = useProfiles();

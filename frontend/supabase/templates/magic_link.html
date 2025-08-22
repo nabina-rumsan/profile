@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Your Login Token</title>
+    <style>
+      body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6fb; margin: 0; }
+      .container { max-width: 420px; margin: 40px auto; background: #fff; padding: 32px 24px; border-radius: 10px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+      h2 { color: #2563eb; margin-bottom: 16px; }
+      .otp { font-size: 1.6rem; font-weight: bold; color: #2563eb; margin: 18px 0; letter-spacing: 2px; text-align: center; }
+      .note { color: #555; font-size: 1rem; margin-top: 8px; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Your Login Token</h2>
+      <p style="text-align:center;">Use this token to log in:</p>
+      <div class="otp">{{ .Token }}</div>
+      <p class="note">This code will expire soon.</p>
+    </div>
+  </body>
+</html>
