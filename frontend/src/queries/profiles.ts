@@ -1,11 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchProfiles, addProfile, updateProfile, deleteProfile } from '@/app/profiles/actions';
+import { fetchProfiles, addProfile, updateProfile, deleteProfile, fetchProfileById } from '@/app/profiles/actions';
+
 
 /* Fetch profiles */
 export function useProfiles() {
   return useQuery({
     queryKey: ['profiles'],
     queryFn: fetchProfiles,
+  });
+}
+
+/* Single profile */
+export function useProfileId(id: string) {
+  return useQuery({
+    queryKey: ['profiles', id],
+    queryFn: () => fetchProfileById(id),
+    enabled: !!id, // avoid fetching with undefined
   });
 }
 
@@ -19,6 +29,7 @@ export function useAddProfile() {
     },
   });
 }
+
 
 /* Update profile */
 export function useUpdateProfile() {

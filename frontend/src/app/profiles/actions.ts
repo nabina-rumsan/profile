@@ -5,6 +5,20 @@ export async function fetchProfiles() {
   return data || []
 }
 
+// Fetch single profile by ID
+export async function fetchProfileById(id: string) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*') // or list the fields you need
+    .eq('id', id)
+    .single();   // ensures only one row is returned
+
+  if (error) throw error;
+  return data;
+}
+
+
+
 export async function addProfile(formData: FormData) {
   const username = formData.get('username') as string;
   const email = formData.get('email') as string;

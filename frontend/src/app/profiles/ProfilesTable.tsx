@@ -6,7 +6,7 @@ import { Trash ,Edit2Icon} from 'lucide-react'
 import { useDeleteProfile, useUpdateProfile } from '@/queries/profiles'
 import { useState } from 'react'
 
-export default function ProfilesTable({ profiles }: { profiles: any[] }) {
+export default function ProfilesTable({ profiles, onRowClick }: { profiles: any[], onRowClick?: (id: string) => void }) {
   const deleteProfileMutation = useDeleteProfile();
   const updateProfileMutation = useUpdateProfile();
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -41,7 +41,7 @@ export default function ProfilesTable({ profiles }: { profiles: any[] }) {
           const isEditing = editingId === profile.id;
 
           return (
-            <TableRow key={profile.id}>
+            <TableRow key={profile.id} onClick={() => !isEditing && onRowClick && onRowClick(profile.id)} style={{ cursor: !isEditing && onRowClick ? 'pointer' : undefined }}>
               {isEditing ? (
                 <>
                   <TableCell>
@@ -105,7 +105,7 @@ export default function ProfilesTable({ profiles }: { profiles: any[] }) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => setEditingId(profile.id)}
+                      onClick={(e) => { e.stopPropagation(); setEditingId(profile.id); }}
                       aria-label={`Edit ${profile.username}`}
                     >
                       <Edit2Icon size={16} />
@@ -113,7 +113,7 @@ export default function ProfilesTable({ profiles }: { profiles: any[] }) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleDelete(profile.id)}
+                      onClick={(e) => { e.stopPropagation(); handleDelete(profile.id); }}
                       disabled={deleteProfileMutation.isPending}
                       aria-label={`Delete ${profile.username}`}
                     >
