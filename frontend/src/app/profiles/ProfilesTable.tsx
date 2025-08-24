@@ -1,131 +1,40 @@
 'use client'
 
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import { Trash ,Edit2Icon} from 'lucide-react'
-import { useDeleteProfile, useUpdateProfile } from '@/queries/profiles'
-import { useState } from 'react'
 
 export default function ProfilesTable({ profiles, onRowClick }: { profiles: any[], onRowClick?: (id: string) => void }) {
-  const deleteProfileMutation = useDeleteProfile();
-  const updateProfileMutation = useUpdateProfile();
-  const [editingId, setEditingId] = useState<string | null>(null);
 
-  async function handleDelete(profileId: string) {
-    await deleteProfileMutation.mutateAsync(profileId);
-  }
-
-  async function handleEdit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    await updateProfileMutation.mutateAsync({
-      id: formData.get('id') as string,
-      username: formData.get('username') as string,
-      email: formData.get('email') as string,
-    });
-    setEditingId(null);
-  }
 
   return (
-    <Table className="min-w-full border border-gray-300 rounded-md">
-      <TableHeader>
-        <TableRow>
-          <TableHead>Username</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {profiles?.map((profile) => {
-          if (!profile?.id) return null;
-          const isEditing = editingId === profile.id;
-
-          return (
-            <TableRow key={profile.id} onClick={() => !isEditing && onRowClick && onRowClick(profile.id)} style={{ cursor: !isEditing && onRowClick ? 'pointer' : undefined }}>
-              {isEditing ? (
-                <>
-                  <TableCell>
-                    <form id={`edit-username-form-${profile.id}`} onSubmit={handleEdit}>
-                      <input type="hidden" name="id" value={profile.id} />
-                      <input
-                        name="username"
-                        defaultValue={profile.username ?? ''}
-                        className="border rounded px-2 py-1"
-                      />
-                    </form>
-                  </TableCell>
-                  <TableCell>
-                    <form id={`edit-email-form-${profile.id}`} onSubmit={handleEdit}>
-                      <input type="hidden" name="id" value={profile.id} />
-                      <input
-                        name="email"
-                        defaultValue={profile.email ?? ''}
-                        className="border rounded px-2 py-1"
-                      />
-                    </form>
-                  </TableCell>
-                  <TableCell className="flex gap-2">
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={() => {
-                        const usernameForm = document.getElementById(`edit-username-form-${profile.id}`);
-                        const emailForm = document.getElementById(`edit-email-form-${profile.id}`);
-                        const usernameInput = usernameForm?.querySelector('input[name="username"]') as HTMLInputElement | null;
-                        const emailInput = emailForm?.querySelector('input[name="email"]') as HTMLInputElement | null;
-                        const username = usernameInput?.value ?? '';
-                        const email = emailInput?.value ?? '';
-                        updateProfileMutation.mutateAsync({
-                          id: profile.id,
-                          username,
-                          email,
-                        });
-                        setEditingId(null);
-                      }}
-                      disabled={updateProfileMutation.isPending}
-                    >
-                      Save
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(profile.id)}
-                      disabled={deleteProfileMutation.isPending}
-                      aria-label={`Delete ${profile.username}`}
-                    >
-                      <Trash size={16} />
-                    </Button>
-                  </TableCell>
-                </>
-              ) : (
-                <>
-                  <TableCell>{profile.username}</TableCell>
-                  <TableCell>{profile.email}</TableCell>
-                  <TableCell className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={(e) => { e.stopPropagation(); setEditingId(profile.id); }}
-                      aria-label={`Edit ${profile.username}`}
-                    >
-                      <Edit2Icon size={16} />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={(e) => { e.stopPropagation(); handleDelete(profile.id); }}
-                      disabled={deleteProfileMutation.isPending}
-                      aria-label={`Delete ${profile.username}`}
-                    >
-                      <Trash size={16} />
-                    </Button>
-                  </TableCell>
-                </>
-              )}
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+    <div className="flex flex-col gap-6 p-8">
+      {profiles?.map((profile) => {
+        if (!profile?.id) return null;
+        return (
+          <div
+            key={profile.id}
+            className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-2 hover:shadow-lg transition cursor-pointer"
+            onClick={() => onRowClick && onRowClick(profile.id)}
+          >
+            <div className="flex items-center gap-4 mb-2">
+              {/* Avatar image placeholder (circle with initial) */}
+              <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center">
+                {/* Replace with profile image if available */}
+                <span className="text-lg font-bold text-gray-700">
+                  {profile.full_name?.charAt(0).toUpperCase() || profile.username?.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <div className="flex flex-col">
+                <span className="font-semibold text-base text-gray-900">{profile.full_name}</span>
+                <span className="text-sm text-gray-500">@{profile.username}</span>
+              </div>
+              <span className={`ml-2 px-2 py-0.5 rounded text-xs font-semibold ${profile.status === "active" ? "bg-green-600 text-white" : "bg-pink-400 text-white"}`}>
+                {profile.status}
+              </span>
+            </div>
+            <div className="text-sm text-gray-700 mb-1">{profile.bio || "No bio provided."}</div>
+            <div className="text-xs text-gray-400">{profile.email}</div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
