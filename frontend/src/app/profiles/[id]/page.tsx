@@ -1,8 +1,9 @@
 "use client";
 import { useProfileId } from "@/queries/profiles";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+
+import ProfileActions from "../ProfileActions";
 
 export default function ProfileDetailPage() {
   const params = useParams();
@@ -14,6 +15,8 @@ export default function ProfileDetailPage() {
       : "";
 
   const { data: profile, isLoading, error } = useProfileId(id);
+  const router = useRouter();
+
 
   if (isLoading) return <div className="text-center py-8">Loading...</div>;
   if (error) return <div className="text-center text-red-500 py-8">Error loading profile</div>;
@@ -22,11 +25,7 @@ export default function ProfileDetailPage() {
   return (
     <div className="min-h-screen bg-[#fff6fa]">
       <div className="max-w-2xl mx-auto py-10">
-        <div className="mb-6 flex items-center gap-2">
-          <Button variant="ghost" className="text-pink-600 font-semibold px-0" onClick={() => window.history.back()}>
-            &larr; Back to Profiles
-          </Button>
-        </div>
+        <ProfileActions id={id} profile={profile} onProfileUpdated={() => router.refresh()} />
         <h1 className="text-3xl font-bold text-gray-800 mb-8 flex items-center gap-2">
           Profile Details
         </h1>
