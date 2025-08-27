@@ -1,9 +1,9 @@
 'use client';
 import { useProfiles } from '@/queries/profiles';
-import ProfilesTable from './ProfilesTable';
 import { Button } from '@/components/ui/button';
 import { logout } from '../auth/login/actions';
 import { useRouter } from 'next/navigation';
+import ProfilesTable from '@/sections/profiles/ProfilesTable';
 
 export default function ProfilesPage() {
   const { data: profiles = [], isLoading, error } = useProfiles();

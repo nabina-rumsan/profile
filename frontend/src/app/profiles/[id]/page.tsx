@@ -2,8 +2,8 @@
 import { useProfileId } from "@/queries/profiles";
 import { useParams, useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ProfileActions from "@/sections/profiles/ProfileActions";
 
-import ProfileActions from "../ProfileActions";
 
 export default function ProfileDetailPage() {
   const params = useParams();
