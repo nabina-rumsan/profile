@@ -2,7 +2,7 @@
 import { useProfileId } from "@/queries/profiles";
 import { useParams, useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import ProfileActions from "@/sections/profiles/ProfileActions";
+import ProfileActions from "@/components/sections/profiles/ProfileActions";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";

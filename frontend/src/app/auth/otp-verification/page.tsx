@@ -1,4 +1,4 @@
-import OtpVerification from "@/sections/login/OtpVerification";
+import OtpVerification from "@/components/sections/login/OtpVerification";
 
 export default function OtpVerificationPage() {
   return <OtpVerification />;

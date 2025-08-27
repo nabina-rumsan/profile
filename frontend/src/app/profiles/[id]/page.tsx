@@ -1,7 +1,7 @@
 "use client";
 
-import ProfilePosts from "@/sections/posts/ProfilePosts";
-import ProfileDetail from "@/sections/profiles/ProfileDetail";
+import ProfilePosts from "@/components/sections/posts/ProfilePosts";
+import ProfileDetail from "@/components/sections/profiles/ProfileDetail";
 import { useParams } from "next/navigation";
 
 export default function ProfileDetailPage() {

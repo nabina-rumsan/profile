@@ -1,6 +1,6 @@
 "use client";
 
-import ProfilesForm from "@/sections/profiles/ProfilesForm";
+import ProfilesForm from "@/components/sections/profiles/ProfilesForm";
 
 export default function AddProfilePage() {
   return (
