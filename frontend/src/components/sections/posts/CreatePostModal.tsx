@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCreatePost, useUpdatePost } from "@/queries/posts";
 import { useRouter } from "next/navigation";
+import { UpdatePostRequest } from "@/types/post";
 
 export default function PostModal({
   open,
@@ -28,12 +29,15 @@ export default function PostModal({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+
+    // Only pass id separately, do not include it in the update payload
+    const updatePayload = Object.fromEntries(formData.entries());
+
     if (mode === "edit" && post) {
-      const updates = {
-        title: formData.get("title") as string,
-        content: formData.get("content") as string,
-      };
-      await updatePostMutation.mutateAsync({ id: post.id, updates });
+      // Remove id from updatePayload
+      const { id, ...updates } = updatePayload ;
+      await updatePostMutation.mutateAsync({ id: post.id, ...updates });
+      console.log("Update mutation called for post:", post.id, updates);
       onPostUpdated?.();
     } else {
       const data = {

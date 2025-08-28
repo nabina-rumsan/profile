@@ -1,24 +1,21 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { useDeleteProfile } from "@/queries/profiles";
+import { useDeletePost } from "@/queries/posts";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import EditProfileModal from "./EditProfileModal";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 
-export default function ProfileActions({ id, profile, onProfileUpdated }: { id: string, profile: any, onProfileUpdated?: () => void }) {
-  const deleteProfileMutation = useDeleteProfile();
+export default function PostActions({ id, post, onEdit, onPostUpdated }: { id: string, post: any, onEdit?: () => void, onPostUpdated?: () => void }) {
+  const deletePostMutation = useDeletePost();
   const router = useRouter();
-  const [editOpen, setEditOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   return (
     <div className="flex items-center gap-2 mb-6">
-
       <Button
         variant="outline"
         className="ml-2 text-blue-600 border-blue-600 font-semibold"
-        onClick={() => setEditOpen(true)}
+        onClick={onEdit}
       >
         Edit
       </Button>
@@ -35,18 +32,18 @@ export default function ProfileActions({ id, profile, onProfileUpdated }: { id: 
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Profile</AlertDialogTitle>
+            <AlertDialogTitle>Delete Post</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this profile? This action cannot be undone.
+              Are you sure you want to delete this post? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={async () => {
-                await deleteProfileMutation.mutateAsync(id);
+                await deletePostMutation.mutateAsync(id);
                 setDeleteDialogOpen(false);
-                router.push("/profiles");
+               
               }}
             >
               Confirm
@@ -54,15 +51,6 @@ export default function ProfileActions({ id, profile, onProfileUpdated }: { id: 
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      {editOpen && (
-        <EditProfileModal
-          open={editOpen}
-          setOpen={setEditOpen}
-          id={id}
-          profile={profile}
-          onProfileUpdated={onProfileUpdated}
-        />
-      )}
     </div>
   );
 }

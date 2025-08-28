@@ -21,6 +21,9 @@ export async function createPost(post: { profile_id: string; title: string; cont
 }
 
 export async function updatePost(id: string, updates: { title?: string; content?: string }) {
+   const { data: userData, error: userError } = await supabase.auth.getUser();
+  console.log("Current user for updatePost:", userData, userError);
+
   const { data, error } = await supabase
     .from("posts")
     .update(updates)

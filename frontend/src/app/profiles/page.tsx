@@ -32,7 +32,10 @@ export default function ProfilesPage() {
               </Button>
               <Button
                 className="bg-pink-600 text-white px-4 py-2 rounded-lg shadow hover:bg-pink-700"
-                onClick={() => router.push('/profiles/add')}
+                // onClick={() => router.push('/profiles/add')}
+                 onClick={() => setTimeout(() => {
+  router.push("/profiles/add");
+}, 100)}
               >
                 Add Profile
               </Button>

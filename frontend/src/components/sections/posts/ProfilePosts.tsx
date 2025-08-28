@@ -1,35 +1,23 @@
-import { usePostsByProfile, useDeletePost } from "@/queries/posts";
+import { usePostsByProfile } from "@/queries/posts";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
-import PostModal from "./CreatePostModal";
+import PostActions from "./PostActions";
+import CreatePostModal from "./CreatePostModal";
 
 export default function ProfilePosts({ profileId }: { profileId: string }) {
   const { data: posts = [], isLoading, error } = usePostsByProfile(profileId);
-  console.log("Posts data:", posts);
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
-  const [modalPost, setModalPost] = useState<any>(null);
-  const deletePostMutation = useDeletePost();
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [postToDelete, setPostToDelete] = useState<any>(null);
-
-  const handleEdit = (post: any) => {
-    setModalPost(post);
-    setModalMode("edit");
-    setModalOpen(true);
-  };
+  const [editingPost, setEditingPost] = useState<any | null>(null);
 
   const handleCreate = () => {
-    setModalPost(null);
-    setModalMode("create");
+    setEditingPost(null);
     setModalOpen(true);
   };
 
-  const handleDelete = (post: any) => {
-    setPostToDelete(post);
-    setDeleteOpen(true);
+  const handleEdit = (post: any) => {
+    setEditingPost(post);
+    setModalOpen(true);
   };
 
   if (isLoading) return <div>Loading posts...</div>;
@@ -69,51 +57,35 @@ export default function ProfilePosts({ profileId }: { profileId: string }) {
                   </div>
                 </div>
               </div>
+              {post.title && (
+                <div className="text-lg font-bold text-gray-900 mb-1">{post.title}</div>
+              )}
               <div className="text-base text-gray-800 mb-2">{post.content}</div>
               <div className="flex gap-6 items-center text-gray-500 text-sm mb-2">
                 <span className="flex items-center gap-1"><span>❤️</span>{post.likes ?? 0}</span>
                 <span className="flex items-center gap-1"><span>💬</span>{post.comments ?? 0}</span>
               </div>
               <div className="flex gap-2 mt-2">
-                <Button size="sm" variant="outline" className="text-gray-500 border-gray-300" onClick={() => handleEdit(post)}>Edit</Button>
-                <Button size="sm" variant="destructive" className="text-gray-500 border-gray-300" onClick={() => handleDelete(post)}>Delete</Button>
+                <PostActions
+                  id={post.id}
+                  post={post}
+                  onEdit={() => handleEdit(post)}
+                  onPostUpdated={() => setModalOpen(false)}
+                />
               </div>
             </Card>
           ))
         )}
       </div>
       {modalOpen && (
-        <PostModal
+        <CreatePostModal
           open={modalOpen}
           setOpen={setModalOpen}
           profileId={profileId}
-          post={modalPost}
-          mode={modalMode}
+          post={editingPost}
+          mode={editingPost ? "edit" : "create"}
           onPostUpdated={() => setModalOpen(false)}
         />
-      )}
-      {deleteOpen && (
-        <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Post</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to delete this post? This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setDeleteOpen(false)}>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={async () => {
-                  await deletePostMutation.mutateAsync(postToDelete.id);
-                  setDeleteOpen(false);
-                }}
-              >
-                Confirm
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       )}
     </div>
   );

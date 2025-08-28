@@ -6,6 +6,7 @@ import ProfileActions from "@/components/sections/profiles/ProfileActions";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 export default function ProfileDetail() {
   const params = useParams();
@@ -21,11 +22,16 @@ const id = params.id as string;
   return (
     <div className=" bg-[#fff6fa]">
       <div className="max-w-2xl mx-auto py-10">
-        <ProfileActions id={id} profile={profile} onProfileUpdated={() => router.refresh()} />
+         <Button variant="ghost" className="text-pink-600 font-semibold px-0" onClick={() => window.history.back()}>
+        &larr; Back to Profiles
+      </Button>
         <h1 className="text-3xl font-bold text-gray-800 mb-8 flex items-center gap-2">
           Profile Details
         </h1>
-        <Card className="rounded-xl shadow-md p-8 flex flex-col items-start gap-4 min-w-[600px]">
+        <Card className="rounded-xl shadow-md p-8 flex flex-col items-start gap-4 min-w-[600px] relative">
+          <div className="absolute top-6 right-6 flex gap-2">
+            <ProfileActions id={id} profile={profile} onProfileUpdated={() => router.refresh()} />
+          </div>
           <div className="flex items-center gap-6 mb-2">
             <Avatar className="w-20 h-20">
               <AvatarImage src={profile.avatar_url || ''} alt={profile.full_name || profile.username} />
