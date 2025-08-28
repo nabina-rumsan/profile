@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useUpdateProfile } from "@/queries/profiles";
 import { useRouter } from "next/navigation";
+import { UpdateProfileRequest } from "@/types/profile";
 
 export default function EditProfileModal({
   open,
@@ -22,25 +23,20 @@ export default function EditProfileModal({
 
   if (!open) return null;
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  const formData = new FormData(e.currentTarget);
 
-    const data = {
-      id,
-      full_name: formData.get("full_name") as string,
-      username: formData.get("username") as string,
-      email: formData.get("email") as string,
-      bio: formData.get("bio") as string,
-    };
+  const data: UpdateProfileRequest = {
+    id,
+    ...Object.fromEntries(formData.entries()),
+  } as UpdateProfileRequest;
 
-    console.log("Edit form submitted:", data);
-
-    await updateProfileMutation.mutateAsync(data);
-    setOpen(false);
-    onProfileUpdated?.();
-    router.refresh();
-  };
+  await updateProfileMutation.mutateAsync(data);
+  setOpen(false);
+  onProfileUpdated?.();
+  router.refresh();
+};
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
