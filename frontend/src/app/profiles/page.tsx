@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button';
 import { logout } from '../auth/login/actions';
 import { useRouter } from 'next/navigation';
 import ProfilesTable from '@/components/sections/profiles/ProfilesTable';
+import { useProfilesRealtime } from '@/queries/useProfilesRealtime';
 
 export default function ProfilesPage() {
   const { data: profiles = [], isLoading, error } = useProfiles();
+  useProfilesRealtime() 
   const router = useRouter();
 
   return (

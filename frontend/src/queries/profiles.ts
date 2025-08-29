@@ -6,7 +6,7 @@ import { CreateProfileRequest, Profile, UpdateProfileRequest } from '@/types/pro
 /* -------------------- Query Keys -------------------- */
 export const QUERY_KEYS = {
   profiles: ['profiles'] as const,
-  profile: (id: string) => ['profile', id] as const,
+ profile: (id: string | number) => ['profile', String(id)] as const,
 } as const;
 
 /* -------------------- Fetch all profiles -------------------- */

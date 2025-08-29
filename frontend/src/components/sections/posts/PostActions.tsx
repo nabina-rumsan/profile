@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 
-export default function PostActions({ id, post, onEdit, onPostUpdated }: { id: string, post: any, onEdit?: () => void, onPostUpdated?: () => void }) {
+export default function PostActions({ id, onEdit }: { id: string, post: any, onEdit?: () => void, onPostUpdated?: () => void }) {
   const deletePostMutation = useDeletePost();
   const router = useRouter();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -43,7 +43,6 @@ export default function PostActions({ id, post, onEdit, onPostUpdated }: { id: s
               onClick={async () => {
                 await deletePostMutation.mutateAsync(id);
                 setDeleteDialogOpen(false);
-               
               }}
             >
               Confirm

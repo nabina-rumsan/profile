@@ -1,5 +1,6 @@
 "use client";
 import { useProfileId } from "@/queries/profiles";
+import { useProfilesRealtime } from '@/queries/useProfilesRealtime';
 import { useParams, useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ProfileActions from "@/components/sections/profiles/ProfileActions";
@@ -9,10 +10,12 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
 export default function ProfileDetail() {
+
   const params = useParams();
-const id = params.id as string;
+  const id = params.id as string;
 
   const { data: profile, isLoading, error } = useProfileId(id);
+  useProfilesRealtime();
   const router = useRouter();
 
   if (isLoading) return <div className="text-center py-8">Loading...</div>;
