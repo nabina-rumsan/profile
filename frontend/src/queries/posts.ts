@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient, UseQueryOptions } from "@tanstac
 import { getPostsByProfile, createPost, updatePost, deletePost } from "@/app/profiles/[id]/actions";
 import { toast } from "react-hot-toast";
 import { Post, CreatePostRequest, UpdatePostRequest } from "@/types/post";
+import { QUERY_KEYS } from "./profiles";
 
 /* -------------------- Query Keys -------------------- */
 export const POST_KEYS = {
@@ -11,9 +12,23 @@ export const POST_KEYS = {
 
 /* -------------------- Fetch posts by profile -------------------- */
 export function usePostsByProfile(profileId: string, options?: UseQueryOptions<Post[]>) {
+    const queryClient = useQueryClient();
+
   return useQuery({
-    queryKey: POST_KEYS.posts(profileId),
-    queryFn: () => getPostsByProfile(profileId),
+    queryKey: ["posts", profileId],
+    queryFn: async () => {
+      const posts = await getPostsByProfile(profileId);
+
+      return posts.map(post => {
+        const profile = queryClient.getQueryData(QUERY_KEYS.profile(post.profile_id));
+          console.log("Attaching profile to post:", { postId: post.id, profile });
+
+        return {
+          ...post,
+          profile: profile ?? post.profile, // fallback to whatever came from backend
+        };
+      });
+    },
     enabled: !!profileId,
     staleTime: 5 * 60 * 1000,
     ...options,

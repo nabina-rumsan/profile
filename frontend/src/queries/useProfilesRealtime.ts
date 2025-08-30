@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS } from './profiles';
 import { Profile } from '@/types/profile';
+import { Post } from '@/types/post';
 
 export function useProfilesRealtime() {
   const queryClient = useQueryClient();
@@ -33,6 +34,12 @@ export function useProfilesRealtime() {
           if (payload.eventType === 'UPDATE') {
             queryClient.setQueryData(QUERY_KEYS.profile(payload.new.id), payload.new);
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.profile(payload.new.id) });
+            queryClient.invalidateQueries({
+              predicate: (query) =>
+                query.queryKey[0] === "posts" &&
+                Array.isArray(query.state.data) &&
+                query.state.data.some((p: Post) => p.profile_id === (payload.new as Profile).id),
+            });
           }
 
   

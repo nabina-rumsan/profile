@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { useQueryClient } from '@tanstack/react-query';
 import { POST_KEYS } from './posts';
 import { Post } from '@/types/post';
+import { QUERY_KEYS } from './profiles';
 
 export function usePostsRealtime(profileId: string) {
   const queryClient = useQueryClient();
@@ -22,16 +23,46 @@ export function usePostsRealtime(profileId: string) {
 
 
           queryClient.setQueryData<Post[]>(POST_KEYS.posts(profileId), (old = []) => {
+            // if (
+            //   payload.eventType === 'INSERT' &&
+            //   newPost.profile_id?.toString() === profileId.toString()
+            // )
+            //   // return [...old, newPost];
+            //     return [...old.filter((p) => p.id !== newPost.id), newPost];
             if (
-              payload.eventType === 'INSERT' &&
-              newPost.profile_id?.toString() === profileId.toString()
-            )
-              return [...old, newPost];
-            if (
-              payload.eventType === 'UPDATE' &&
-              newPost.profile_id?.toString() === profileId.toString()
-            )
-              return old.map((p) => (p.id === newPost.id ? newPost : p));
+  payload.eventType === 'INSERT' &&
+  newPost.profile_id?.toString() === profileId.toString()
+) {
+  // Try to get profile from cache
+  const profile = queryClient.getQueryData(QUERY_KEYS.profile(newPost.profile_id));
+console.log("Realtime post insert:", { newPost, profile, oldCache: old });
+  const hydratedPost = {
+    ...newPost,
+    profile: profile ?? { id: newPost.profile_id, full_name: 'Unknown', username: 'unknown' },
+  };
+  console.log("Hydrated post:", hydratedPost);
+
+  return [...old.filter((p) => p.id !== newPost.id), hydratedPost];
+}
+
+            // if (
+            //   payload.eventType === 'UPDATE' &&
+            //   newPost.profile_id?.toString() === profileId.toString()
+            // )
+              // return old.map((p) => (p.id === newPost.id ? newPost : p));
+              if (
+  payload.eventType === 'UPDATE' &&
+  newPost.profile_id?.toString() === profileId.toString()
+) {
+    console.log("Realtime post update testing:", { newPost, oldCache: old });
+
+  return old.map((p) =>
+    p.id === newPost.id
+      ? { ...p, ...newPost, profile: p.profile } // keep profile intact
+      : p
+  );
+}
+
             if (
               payload.eventType === 'DELETE'
             ) {
@@ -42,13 +73,6 @@ export function usePostsRealtime(profileId: string) {
             }
             return old;
           });
-
-          if (
-            payload.eventType === 'INSERT' &&
-            newPost.profile_id?.toString() === profileId.toString()
-          ) {
-            queryClient.invalidateQueries({ queryKey: POST_KEYS.posts(profileId) });
-          }
 
           if (
             payload.eventType === 'UPDATE' &&
