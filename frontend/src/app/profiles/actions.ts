@@ -1,12 +1,22 @@
 import { supabase } from '@/lib/supabaseClient'
 import { CreateProfileRequest, UpdateProfileRequest } from '@/types/profile';
 
-export async function fetchProfiles() {
-  const { data, error } = await supabase
+// export async function fetchProfiles() {
+//   const { data, error } = await supabase
+//     .from('profiles')
+//     .select('id,full_name,email,status,username,bio,created_at');
+//   if (error) throw error;
+//   return data || [];
+// }
+export async function fetchProfiles(page = 1, pageSize = 10) {
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  const { data, error, count } = await supabase
     .from('profiles')
-    .select('id,full_name,email,status,username,bio,created_at');
+    .select('id,full_name,email,status,username,bio,created_at', { count: 'exact' })
+    .range(from, to);
   if (error) throw error;
-  return data || [];
+  return { data: data || [], count: count || 0 };
 }
 
 export async function fetchProfileById(id: string) {
