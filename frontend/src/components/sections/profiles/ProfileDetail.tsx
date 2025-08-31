@@ -1,6 +1,5 @@
 "use client";
 import { useProfileId } from "@/queries/profiles";
-import { useProfilesRealtime } from '@/queries/useProfilesRealtime';
 import { useParams, useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ProfileActions from "@/components/sections/profiles/ProfileActions";
@@ -8,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { useProfilesRealtime } from "@/realtime/useProfilesRealtime";
 
 export default function ProfileDetail() {
 

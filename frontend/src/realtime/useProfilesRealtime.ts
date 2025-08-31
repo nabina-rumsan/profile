@@ -3,9 +3,9 @@
 import { useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useQueryClient } from '@tanstack/react-query';
-import { QUERY_KEYS } from './profiles';
 import { Profile } from '@/types/profile';
 import { Post } from '@/types/post';
+import { QUERY_KEYS } from '@/queries/profiles';
 
 export function useProfilesRealtime() {
   const queryClient = useQueryClient();

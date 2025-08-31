@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import PostActions from "./PostActions";
 import CreatePostModal from "./CreatePostModal";
-import { usePostsRealtime } from "@/queries/usePostsRealtime";
+import { usePostsRealtime } from "@/realtime/usePostsRealtime";
 
 export default function ProfilePosts({ profileId }: { profileId: string }) {
   const { data: posts = [], isLoading, error } = usePostsByProfile(profileId);

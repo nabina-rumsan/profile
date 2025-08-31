@@ -3,9 +3,9 @@
 import { useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useQueryClient } from '@tanstack/react-query';
-import { POST_KEYS } from './posts';
 import { Post } from '@/types/post';
-import { QUERY_KEYS } from './profiles';
+import { POST_KEYS } from '@/queries/posts';
+import { QUERY_KEYS } from '@/queries/profiles';
 
 export function usePostsRealtime(profileId: string) {
   const queryClient = useQueryClient();
