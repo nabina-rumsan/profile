@@ -37,7 +37,12 @@ const debouncedSearchTerm = useDebounce(searchTerm, 500);
                <input
                type="text"
                value={searchTerm}
-               onChange={e => setSearchTerm(e.target.value)}
+               onChange={e => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    setPagination(1, pageSize, value);
+  }}
+               
                placeholder="Search profiles..."
                className="w-full max-w-xl px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-200 bg-white shadow"
   />
@@ -77,8 +82,8 @@ const debouncedSearchTerm = useDebounce(searchTerm, 500);
       page={page}
       pageSize={pageSize}
       totalCount={totalCount}
-      onPageChange={(newPage) => setPagination(newPage, pageSize)}
-      onPageSizeChange={(newSize) => setPagination(1, newSize)}
+      onPageChange={(newPage) => setPagination(newPage, pageSize,debouncedSearchTerm)}
+      onPageSizeChange={(newSize) => setPagination(1, newSize,debouncedSearchTerm)}
     />
             </>
           )}

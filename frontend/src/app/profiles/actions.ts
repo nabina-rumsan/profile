@@ -11,13 +11,14 @@ export async function fetchProfiles(page = 1, pageSize = 10, search?: string) {
     .order('created_at', { ascending: false });
 
   if (search) {
-    query = query.or(`full_name.ilike.%${search}%,username.ilike.%${search}%,email.ilike.%${search}%`);
+    query = query.or(`full_name.ilike.%${search}%`);
   }
 
   const { data, error, count } = await query.range(from, to);
   if (error) throw error;
   return { data: data || [], count: count || 0 };
 }
+
 export async function fetchProfileById(id: string) {
   const { data, error } = await supabase
     .from('profiles')
