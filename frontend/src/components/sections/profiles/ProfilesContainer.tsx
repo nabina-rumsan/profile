@@ -1,5 +1,4 @@
 'use client';
-import { useState } from 'react';
 import { useProfiles } from '@/queries/profiles';
 import { Button } from '@/components/ui/button';
 import { logout } from '../../../app/auth/login/actions';
@@ -7,10 +6,14 @@ import { useRouter } from 'next/navigation';
 import ProfilesTable from '@/components/sections/profiles/ProfilesTable';
 import ProfilesPagination from '@/components/common/ProfilesPagination';
 import { useProfilesRealtime } from '@/realtime/useProfilesRealtime';
+import { usePagination } from '@/components/common/UsePagination';
+
+
 
 export default function ProfilesContainer() {
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+
+  const { page, pageSize, setPagination } = usePagination();
+
   const { data, isLoading, error } = useProfiles(page, pageSize);
   useProfilesRealtime();
   const router = useRouter();
@@ -29,6 +32,7 @@ export default function ProfilesContainer() {
             <div className="w-full flex justify-center gap-4">
               <input
                 type="text"
+                onChange={e => e.target.value}
                 placeholder="Search profiles..."
                 className="w-full max-w-xl px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-200 bg-white shadow"
               />
@@ -64,16 +68,13 @@ export default function ProfilesContainer() {
                 onRowClick={(id) => router.push(`/profiles/${id}`)}
               />
 
-              <ProfilesPagination
-                page={page}
-                pageSize={pageSize}
-                totalCount={totalCount}
-                onPageChange={setPage}
-                onPageSizeChange={(size) => {
-                  setPageSize(size);
-                  setPage(1);
-                }}
-              />
+           <ProfilesPagination
+      page={page}
+      pageSize={pageSize}
+      totalCount={totalCount}
+      onPageChange={(newPage) => setPagination(newPage, pageSize)}
+      onPageSizeChange={(newSize) => setPagination(1, newSize)}
+    />
             </>
           )}
         </div>
