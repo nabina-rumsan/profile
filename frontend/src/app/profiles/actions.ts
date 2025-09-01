@@ -1,18 +1,23 @@
 import { supabase } from '@/lib/supabaseClient'
 import { CreateProfileRequest, UpdateProfileRequest } from '@/types/profile';
 
-export async function fetchProfiles(page = 1, pageSize = 10) {
+export async function fetchProfiles(page = 1, pageSize = 10, search?: string) {
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
-  const { data, error, count } = await supabase
+
+  let query = supabase
     .from('profiles')
     .select('id,full_name,email,status,username,bio,created_at', { count: 'exact' })
-    .order('created_at', { ascending: false })
-    .range(from, to);
+    .order('created_at', { ascending: false });
+
+  if (search) {
+    query = query.or(`full_name.ilike.%${search}%,username.ilike.%${search}%,email.ilike.%${search}%`);
+  }
+
+  const { data, error, count } = await query.range(from, to);
   if (error) throw error;
   return { data: data || [], count: count || 0 };
 }
-
 export async function fetchProfileById(id: string) {
   const { data, error } = await supabase
     .from('profiles')

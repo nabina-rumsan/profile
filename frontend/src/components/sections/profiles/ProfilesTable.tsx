@@ -6,6 +6,9 @@ export default function ProfilesTable({ profiles, onRowClick }: { profiles: any[
 
   return (
     <div className="flex flex-col gap-6 p-8">
+      {profiles.length === 0 && <div className="flex justify-center items-center h-32 text-lg text-gray-500">
+    No profiles found.
+  </div>}
       {profiles?.map((profile) => {
         if (!profile?.id) return null;
         return (

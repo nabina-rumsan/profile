@@ -7,14 +7,18 @@ import ProfilesTable from '@/components/sections/profiles/ProfilesTable';
 import ProfilesPagination from '@/components/common/ProfilesPagination';
 import { useProfilesRealtime } from '@/realtime/useProfilesRealtime';
 import { usePagination } from '@/components/common/UsePagination';
+import { useState } from 'react';
+import { useDebounce } from '@/components/hooks/UseDebounce';
 
 
 
 export default function ProfilesContainer() {
+const [searchTerm, setSearchTerm] = useState('');
+const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   const { page, pageSize, setPagination } = usePagination();
 
-  const { data, isLoading, error } = useProfiles(page, pageSize);
+  const { data, isLoading, error } = useProfiles(page, pageSize,debouncedSearchTerm);
   useProfilesRealtime();
   const router = useRouter();
 
@@ -30,12 +34,13 @@ export default function ProfilesContainer() {
           {/* Actions */}
           <div className="w-full flex flex-col items-center mb-8">
             <div className="w-full flex justify-center gap-4">
-              <input
-                type="text"
-                onChange={e => e.target.value}
-                placeholder="Search profiles..."
-                className="w-full max-w-xl px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-200 bg-white shadow"
-              />
+               <input
+               type="text"
+               value={searchTerm}
+               onChange={e => setSearchTerm(e.target.value)}
+               placeholder="Search profiles..."
+               className="w-full max-w-xl px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-200 bg-white shadow"
+  />
               <Button
                 className="bg-black text-white px-4 py-2 rounded-lg shadow hover:bg-gray-800"
                 onClick={async () => {

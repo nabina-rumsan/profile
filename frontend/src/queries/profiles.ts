@@ -10,20 +10,14 @@ export const QUERY_KEYS = {
 } as const;
 
 /* -------------------- Fetch all profiles -------------------- */
-// export function useProfiles(options?: UseQueryOptions<Profile[]>) {
-//   return useQuery({
-//     queryKey: QUERY_KEYS.profiles,
-//     queryFn: fetchProfiles,
-//     staleTime: 5 * 60 * 1000,
-//     gcTime: 10 * 60 * 1000,
-//     ...options,
-//   });
-// }
-
-export function useProfiles(page = 1, pageSize = 10, options?: UseQueryOptions<{ data: Profile[], count: number }>) {
+export function useProfiles(
+  page = 1, 
+  pageSize = 10,   
+  search = "",
+  options?: UseQueryOptions<{ data: Profile[], count: number }>) {
   return useQuery({
-    queryKey: [...QUERY_KEYS.profiles, page, pageSize],
-    queryFn: () => fetchProfiles(page, pageSize),
+    queryKey: [...QUERY_KEYS.profiles, page, pageSize,search],
+    queryFn: () => fetchProfiles(page, pageSize,search),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     ...options,
