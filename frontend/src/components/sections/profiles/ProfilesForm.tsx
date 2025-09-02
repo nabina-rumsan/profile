@@ -5,9 +5,13 @@ import { useAddProfile } from '@/queries/profiles';
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { CreateProfileRequest } from "@/types/profile";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useOrgs } from "@/queries/orgs";
 
 export default function ProfilesForm() {
   const addProfileMutation = useAddProfile();
+  const { data: orgs = [], isLoading } = useOrgs();
+
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -16,7 +20,8 @@ export default function ProfilesForm() {
   if (!form) return;
 
  const formData = new FormData(form);
-const profileData: CreateProfileRequest = Object.fromEntries(formData.entries()) as CreateProfileRequest;
+const profileData: CreateProfileRequest = Object.fromEntries(formData.entries()) as any;
+if (profileData.org_id) profileData.org_id = Number(profileData.org_id);
 
   const result = await addProfileMutation.mutateAsync(profileData); 
   form.reset();
@@ -45,6 +50,21 @@ const profileData: CreateProfileRequest = Object.fromEntries(formData.entries())
           <Label className="block font-semibold text-gray-700 mb-1" htmlFor="bio">Bio</Label>
           <Input name="bio" id="bio" placeholder="Tell us about yourself..." className="bg-[#edf0f6]" />
         </div>
+        <div>
+  <Label htmlFor="org_id">Organization</Label>
+  <Select name="org_id" defaultValue="">
+    <SelectTrigger className="w-full bg-[#edf0f6]">
+      <SelectValue placeholder="Select an organization" />
+    </SelectTrigger>
+    <SelectContent>
+      {orgs.map(org => (
+        <SelectItem key={org.id} value={org.id.toString()}>
+          {org.name}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+</div>
       </div>
       <div className="flex gap-4 mt-4">
         <Button type="submit" className="bg-[#c80032] text-white w-1/2">Create Profile</Button>

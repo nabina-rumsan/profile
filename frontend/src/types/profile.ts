@@ -9,6 +9,7 @@ export const ProfileSchema = z.object({
   bio: z.string().max(500).optional(),
   avatar_url: z.string().url().optional(),
   created_at: z.string().optional(), // ISO date string
+  org_id: z.number()
 });
 
 export const CreateProfileSchema = ProfileSchema.omit({ id: true, created_at: true });

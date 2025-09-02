@@ -1,13 +1,15 @@
 "use client";
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useOrgId, useProfilesByOrgId } from '@/queries/orgs';
 import ProfilesTable from '@/components/sections/profiles/ProfilesTable';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import OrgActions from '@/components/sections/orgs/OrgActions';
 import { useOrgsRealtime } from '@/realtime/useOrgsRealtime';
+import { Button } from '@/components/ui/button';
 
 export default function OrgDetail() {
   useOrgsRealtime();
+  const router = useRouter();
   const params = useParams();
   const orgId = Number(params.id);
   const { data: org, isLoading: orgLoading, error: orgError } = useOrgId(orgId);
@@ -29,12 +31,17 @@ export default function OrgDetail() {
                 <CardDescription className="text-gray-600">{org.description}</CardDescription>
                 <div className="text-xs text-gray-400 mt-2">Owner: {org.owner_id}</div>
               </div>
-              <OrgActions org={org} />
+              <OrgActions org={org} onOrgUpdated={() => {}} />
             </div>
           </CardHeader>
         </Card>
-        <h2 className="text-xl font-bold mb-4">Profiles in this Organization</h2>
-        <ProfilesTable profiles={profiles || []} />
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold">Profiles in this Organization</h2>
+          <Button className="bg-pink-600 text-white" onClick={() => router.push('/profiles/add')}>
+            Add Profile
+          </Button>
+        </div>
+        <ProfilesTable profiles={profiles || []} onRowClick={id => router.push(`/profiles/${id}`)} />
       </div>
     </div>
   );

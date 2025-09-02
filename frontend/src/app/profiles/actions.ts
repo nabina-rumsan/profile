@@ -7,7 +7,7 @@ export async function fetchProfiles(page = 1, pageSize = 10, search?: string) {
 
   let query = supabase
     .from('profiles')
-    .select('id,full_name,email,status,username,bio,created_at', { count: 'exact' })
+    .select('id,full_name,email,status,username,bio,created_at,org_id', { count: 'exact' })
     .order('created_at', { ascending: false });
 
   if (search) {
@@ -22,7 +22,7 @@ export async function fetchProfiles(page = 1, pageSize = 10, search?: string) {
 export async function fetchProfileById(id: string) {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, user_id, full_name, email, status, username, bio, created_at')
+    .select('id, user_id, full_name, email, status, username, bio, created_at, org_id')
     .eq('id', id)
     .single();
   if (error) throw error;
@@ -30,7 +30,7 @@ export async function fetchProfileById(id: string) {
 }
 
 export async function addProfile(profileData: CreateProfileRequest) {
-  const { username, email, full_name, bio } = profileData;
+  const { username, email, full_name, bio, org_id } = profileData;
 
   if (!username || !email || !full_name) {
     throw new Error('Username, email, and full name are required');
@@ -43,6 +43,7 @@ export async function addProfile(profileData: CreateProfileRequest) {
     email,
     full_name,
     bio,
+    org_id,
     status: status || 'active',
   }).select().single();
   if (error) throw error;
