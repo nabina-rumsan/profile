@@ -28,7 +28,7 @@ export default function CreateOrgModal({ open, setOpen, onOrgCreated, org, mode 
       owner_id: org?.owner_id || currentUserId || '', // Use current user id if available
     };
     if (mode === "edit" && org) {
-      await updateOrgMutation.mutateAsync({ id: org.id, updates: data });
+       await updateOrgMutation.mutateAsync({ id: org.id, ...data });
     } else {
       await addOrgMutation.mutateAsync(data);
     }

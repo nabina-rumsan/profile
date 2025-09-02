@@ -4,8 +4,10 @@ import { useOrgId, useProfilesByOrgId } from '@/queries/orgs';
 import ProfilesTable from '@/components/sections/profiles/ProfilesTable';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import OrgActions from '@/components/sections/orgs/OrgActions';
+import { useOrgsRealtime } from '@/realtime/useOrgsRealtime';
 
 export default function OrgDetail() {
+  useOrgsRealtime();
   const params = useParams();
   const orgId = Number(params.id);
   const { data: org, isLoading: orgLoading, error: orgError } = useOrgId(orgId);
@@ -27,7 +29,7 @@ export default function OrgDetail() {
                 <CardDescription className="text-gray-600">{org.description}</CardDescription>
                 <div className="text-xs text-gray-400 mt-2">Owner: {org.owner_id}</div>
               </div>
-              <OrgActions org={org} onOrgUpdated={() => window.location.reload()} />
+              <OrgActions org={org} />
             </div>
           </CardHeader>
         </Card>

@@ -5,8 +5,10 @@ import { useState } from 'react';
 import CreateOrgModal from './CreateOrgModal';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { useOrgsRealtime } from '@/realtime/useOrgsRealtime';
 
 export default function OrganizationsList() {
+   useOrgsRealtime(); 
   const { data, isLoading, error } = useOrgs();
   const orgs = data || [];
   const [createOpen, setCreateOpen] = useState(false);

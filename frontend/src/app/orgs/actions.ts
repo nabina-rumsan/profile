@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabaseClient';
+import { UpdateOrgRequest } from '@/types/org';
 
 export async function fetchOrgs() {
   const { data, error } = await supabase
@@ -29,7 +30,9 @@ export async function addOrg(orgData: { name: string; description?: string; owne
   return data;
 }
 
-export async function updateOrg(id: number, updates: { name?: string; description?: string }) {
+export async function updateOrg(orgData: UpdateOrgRequest) {
+      const { id, ...updates } = orgData;
+
   const { data, error } = await supabase
     .from('orgs')
     .update(updates)
