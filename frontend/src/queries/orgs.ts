@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
-import { fetchOrgs, fetchOrgById, addOrg, updateOrg, deleteOrg } from '@/app/orgs/actions';
+import { fetchOrgs, fetchOrgById, addOrg, updateOrg, deleteOrg, fetchProfilesByOrgId } from '@/app/orgs/actions';
+import { Profile } from '@/types/profile';
 
 export function useOrgs(options?: UseQueryOptions<any[]>) {
   return useQuery({
@@ -47,5 +48,15 @@ export function useDeleteOrg() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orgs'] });
     },
+  });
+}
+
+export function useProfilesByOrgId(orgId: number, options?: UseQueryOptions<Profile[]>) {
+  return useQuery({
+    queryKey: ['profiles', 'org', orgId],
+    queryFn: () => fetchProfilesByOrgId(orgId),
+    enabled: !!orgId,
+    staleTime: 5 * 60 * 1000,
+    ...options,
   });
 }

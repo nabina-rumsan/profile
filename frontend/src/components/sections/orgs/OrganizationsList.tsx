@@ -4,11 +4,13 @@ import Organization from './Organization';
 import { useState } from 'react';
 import CreateOrgModal from './CreateOrgModal';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 export default function OrganizationsList() {
   const { data, isLoading, error } = useOrgs();
   const orgs = data || [];
   const [createOpen, setCreateOpen] = useState(false);
+  const router = useRouter();
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div className="text-red-500">Error loading organizations</div>;
@@ -22,17 +24,23 @@ export default function OrganizationsList() {
             className="bg-pink-600 text-white"
             onClick={() => setCreateOpen(true)}
           >
-             Create Organization
+            Create Organization
           </Button>
         </div>
+
         {createOpen && (
-          <CreateOrgModal open={createOpen} setOpen={setCreateOpen} onOrgCreated={() => {}} />
+          <CreateOrgModal
+            open={createOpen}
+            setOpen={setCreateOpen}
+            onOrgCreated={() => {}}
+          />
         )}
+
         {orgs.length === 0 ? (
           <div>No organizations found.</div>
         ) : (
           orgs.map((org: any) => (
-            <Organization key={org.id} org={org} />
+            <Organization key={org.id} org={org} onClick={(id) => router.push(`/orgs/${id}`)} />
           ))
         )}
       </div>

@@ -48,3 +48,13 @@ export async function deleteOrg(id: number) {
   if (error) throw error;
   return true;
 }
+
+export async function fetchProfilesByOrgId(orgId: number) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('org_id', orgId)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data;
+}
