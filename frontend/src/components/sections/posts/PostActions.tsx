@@ -1,14 +1,15 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useDeletePost } from "@/queries/posts";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import useCurrentUserId from "@/components/hooks/useCurrentUserId";
 
-export default function PostActions({ id, onEdit }: { id: string, post: any, onEdit?: () => void, onPostUpdated?: () => void }) {
+export default function PostActions({ id, post, onEdit, onPostUpdated }: { id: string, post: any, onEdit?: () => void, onPostUpdated?: () => void }) {
   const deletePostMutation = useDeletePost();
-  const router = useRouter();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const currentUserId = useCurrentUserId();
+  const isOwner = post?.profile?.user_id === currentUserId;
 
   return (
     <div className="flex items-center gap-2 mb-6">
@@ -16,6 +17,7 @@ export default function PostActions({ id, onEdit }: { id: string, post: any, onE
         variant="outline"
         className="ml-2 text-blue-600 border-blue-600 font-semibold"
         onClick={onEdit}
+        disabled={!isOwner}
       >
         Edit
       </Button>
@@ -26,6 +28,7 @@ export default function PostActions({ id, onEdit }: { id: string, post: any, onE
             className="ml-2 font-semibold"
             type="button"
             onClick={() => setDeleteDialogOpen(true)}
+            disabled={!isOwner}
           >
             Delete
           </Button>

@@ -22,7 +22,7 @@ export async function fetchProfiles(page = 1, pageSize = 10, search?: string) {
 export async function fetchProfileById(id: string) {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id,full_name,email,status,username,bio,created_at')
+    .select('id, user_id, full_name, email, status, username, bio, created_at')
     .eq('id', id)
     .single();
   if (error) throw error;

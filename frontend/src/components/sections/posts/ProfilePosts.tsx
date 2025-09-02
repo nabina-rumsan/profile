@@ -5,12 +5,15 @@ import { useState } from "react";
 import PostActions from "./PostActions";
 import CreatePostModal from "./CreatePostModal";
 import { usePostsRealtime } from "@/realtime/usePostsRealtime";
+import useCurrentUserId from "@/components/hooks/useCurrentUserId";
 
-export default function ProfilePosts({ profileId }: { profileId: string }) {
+export default function ProfilePosts({ profileId, profile }: { profileId: string, profile: any }) {
   const { data: posts = [], isLoading, error } = usePostsByProfile(profileId);
-  usePostsRealtime(profileId)
+  usePostsRealtime(profileId);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<any | null>(null);
+  const currentUserId = useCurrentUserId();
+  const isOwner = profile?.user_id === currentUserId;
 
   const handleCreate = () => {
     setEditingPost(null);
@@ -29,7 +32,7 @@ export default function ProfilePosts({ profileId }: { profileId: string }) {
     <div className="w-full flex flex-col items-center gap-4 mt-6">
       <div className="w-full max-w-2xl flex items-center justify-between mb-2">
         <h2 className="text-xl font-bold">Posts ({posts.length})</h2>
-        <Button className="bg-pink-600 text-white" onClick={handleCreate}>
+        <Button className="bg-pink-600 text-white" onClick={handleCreate} disabled={!isOwner}>
           + Create Post
         </Button>
       </div>
