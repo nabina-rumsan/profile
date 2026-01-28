@@ -61,6 +61,12 @@ const debouncedSearchTerm = useDebounce(searchTerm, 500);
               >
                 Add Profile
               </Button>
+              <Button
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700"
+                onClick={() => router.push("/orgs")}
+              >
+                Go to Organizations
+              </Button>
             </div>
           </div>
         </div>
